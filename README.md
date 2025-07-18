@@ -34,6 +34,16 @@ If you enjoyed this patch, please share our work with everyone you can. It’s m
 # PATCHING INSTRUCTIONS
 Apply the .ips or .bps patch using https://www.romhacking.net/patch/. Alternatively, in the download, there should be a link to a Gameboy ROM Patcher, for the .ips file, if on Windows. Make the program select a Sakura Wars GB Japanese ROM that definitely wasn’t just downloaded off the internet, and then select the patch files. Virtually a drag a drop process.
 
+# Building
+* Install a supported version of RGBDS.
+```
+git clone https://github.com/gbdev/rgbds
+cd rgbds
+git checkout v0.5.1
+make install
+```
+* Run `make` on this repository.
+
 # Credits
 * ComicMaster138 - Lead Graphics designer
 * Burntends - Localization Director
