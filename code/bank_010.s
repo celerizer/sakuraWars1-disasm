@@ -2201,7 +2201,7 @@ GameState0f_GameBoyComms::
 	ld   [wFarCallBank], a                                  ; $4eca: $ea $9a $c2
 	pop  af                                          ; $4ecd: $f1
 	call FarCall                                       ; $4ece: $cd $62 $09
-	ld   [$c904], a                                  ; $4ed1: $ea $04 $c9
+	ld   [wtodo_PocketSakuraLength], a                                  ; $4ed1: $ea $04 $c9
 	ld   a, $ff                                      ; $4ed4: $3e $ff
 	ld   [wInGameInputsEnabled], a                                  ; $4ed6: $ea $0e $c2
 	ld   a, $0c                                      ; $4ed9: $3e $0c
@@ -2275,7 +2275,7 @@ endc
 	ld   [wSCX], a                                  ; $4f4f: $ea $07 $c2
 	ld   [wSCY], a                                  ; $4f52: $ea $08 $c2
 	ld   [$c915], a                                  ; $4f55: $ea $15 $c9
-	ld   [$c941], a                                  ; $4f58: $ea $41 $c9
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $4f58: $ea $41 $c9
 	call ClearBaseAnimSpriteSpecDetails                                       ; $4f5b: $cd $c9 $2e
 	xor  a                                           ; $4f5e: $af
 	ld   [wStartingColorIdxToLoadCompDataFor], a                                  ; $4f5f: $ea $62 $c3
@@ -2327,7 +2327,7 @@ endc
 	pop  af                                          ; $4fc8: $f1
 	call FarCall                                       ; $4fc9: $cd $62 $09
 	ld   a, $01                                      ; $4fcc: $3e $01
-	ld   [$c941], a                                  ; $4fce: $ea $41 $c9
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $4fce: $ea $41 $c9
 	call Call_010_504d                               ; $4fd1: $cd $4d $50
 	jr   jr_010_4fd9                                 ; $4fd4: $18 $03
 
@@ -2340,7 +2340,7 @@ jr_010_4fd9:
 	ret                                              ; $4fdd: $c9
 
 
-	ld   a, [$c941]                                  ; $4fde: $fa $41 $c9
+	ld   a, [wGameBoyOrTVCommsStatus]                                  ; $4fde: $fa $41 $c9
 	or   a                                           ; $4fe1: $b7
 	jr   z, jr_010_4fe7                              ; $4fe2: $28 $03
 
@@ -2459,7 +2459,7 @@ jr_010_50b2:
 	call Call_010_5986                               ; $50b9: $cd $86 $59
 	ld   a, [$c782]                                  ; $50bc: $fa $82 $c7
 	cp   $ff                                         ; $50bf: $fe $ff
-	jp   z, Jump_010_54fc                            ; $50c1: $ca $fc $54
+	jp   z, DisableTimer                            ; $50c1: $ca $fc $54
 
 	cp   $6c                                         ; $50c4: $fe $6c
 	jr   nz, jr_010_50b2                             ; $50c6: $20 $ea
@@ -2473,19 +2473,19 @@ Jump_010_50d0:
 	ld   a, $01                                      ; $50d1: $3e $01
 	ld   [$c8c1], a                                  ; $50d3: $ea $c1 $c8
 	pop  af                                          ; $50d6: $f1
-	ld   hl, $c8c2                                   ; $50d7: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $50d7: $21 $c2 $c8
 	ld   a, [$c903]                                  ; $50da: $fa $03 $c9
 	ld   [hl], a                                     ; $50dd: $77
 	ld   b, $01                                      ; $50de: $06 $01
 	call Call_010_5a37                               ; $50e0: $cd $37 $5a
 	ld   a, [$c782]                                  ; $50e3: $fa $82 $c7
 	cp   $6c                                         ; $50e6: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $50e8: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $50e8: $c2 $fc $54
 
 	call Call_010_5bfc                               ; $50eb: $cd $fc $5b
 	ld   a, [$c782]                                  ; $50ee: $fa $82 $c7
 	cp   $6c                                         ; $50f1: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $50f3: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $50f3: $c2 $fc $54
 
 	push af                                          ; $50f6: $f5
 	ld   a, $02                                      ; $50f7: $3e $02
@@ -2495,32 +2495,32 @@ Jump_010_50d0:
 	call Call_010_59aa                               ; $5100: $cd $aa $59
 	ld   a, [$c782]                                  ; $5103: $fa $82 $c7
 	cp   $6c                                         ; $5106: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5108: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5108: $c2 $fc $54
 
-	ld   hl, $c8c2                                   ; $510b: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $510b: $21 $c2 $c8
 	ld   b, $01                                      ; $510e: $06 $01
 	call Call_010_5b12                               ; $5110: $cd $12 $5b
 	ld   a, [$c782]                                  ; $5113: $fa $82 $c7
 	cp   $6c                                         ; $5116: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5118: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5118: $c2 $fc $54
 
 	call Call_010_5c01                               ; $511b: $cd $01 $5c
 	ld   a, [$c782]                                  ; $511e: $fa $82 $c7
 	cp   $6c                                         ; $5121: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5123: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5123: $c2 $fc $54
 
 	ld   hl, $c903                                   ; $5126: $21 $03 $c9
-	ld   a, [$c8c2]                                  ; $5129: $fa $c2 $c8
+	ld   a, [wPocketSakuraCommsBuffer]                                  ; $5129: $fa $c2 $c8
 	cp   [hl]                                        ; $512c: $be
-	jp   nz, Jump_010_54fc                           ; $512d: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $512d: $c2 $fc $54
 
 	push af                                          ; $5130: $f5
 	ld   a, $03                                      ; $5131: $3e $03
 	ld   [$c8c1], a                                  ; $5133: $ea $c1 $c8
 	pop  af                                          ; $5136: $f1
-	ld   hl, $c8c2                                   ; $5137: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $5137: $21 $c2 $c8
 	ld   de, $c905                                   ; $513a: $11 $05 $c9
-	ld   a, [$c904]                                  ; $513d: $fa $04 $c9
+	ld   a, [wtodo_PocketSakuraLength]                                  ; $513d: $fa $04 $c9
 	ld   c, a                                        ; $5140: $4f
 
 jr_010_5141:
@@ -2534,15 +2534,15 @@ jr_010_5141:
 	call Call_010_59e7                               ; $514a: $cd $e7 $59
 	ld   a, [$c782]                                  ; $514d: $fa $82 $c7
 	cp   $6c                                         ; $5150: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5152: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5152: $c2 $fc $54
 
-	ld   hl, $c8c2                                   ; $5155: $21 $c2 $c8
-	ld   a, [$c904]                                  ; $5158: $fa $04 $c9
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $5155: $21 $c2 $c8
+	ld   a, [wtodo_PocketSakuraLength]                                  ; $5158: $fa $04 $c9
 	ld   b, a                                        ; $515b: $47
 	call Call_010_5a37                               ; $515c: $cd $37 $5a
 	ld   a, [$c782]                                  ; $515f: $fa $82 $c7
 	cp   $6c                                         ; $5162: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5164: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5164: $c2 $fc $54
 
 	call Call_010_5bfc                               ; $5167: $cd $fc $5b
 	ld   a, [$c782]                                  ; $516a: $fa $82 $c7
@@ -2550,7 +2550,7 @@ jr_010_5141:
 	ld   hl, $c915                                   ; $516f: $21 $15 $c9
 	ld   a, [hl]                                     ; $5172: $7e
 	or   a                                           ; $5173: $b7
-	jp   nz, Jump_010_54fc                           ; $5174: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5174: $c2 $fc $54
 
 	ld   a, $01                                      ; $5177: $3e $01
 	ld   [hl], a                                     ; $5179: $77
@@ -2619,13 +2619,13 @@ SetGameboyCommsState:
 GameState10_PocketSakuraComms::
 	ld   a, [wGameSubstate]                                  ; $51bf: $fa $a1 $c2
 	rst  JumpTable                                         ; $51c2: $df
-	dw $51cd
-	dw $52c9
-	dw $5321
-	dw $532f
-	dw $5340
+	dw PocketSakuraCommsSubstate0_Init
+	dw PocketSakuraCommsSubstate1_Main
+	dw PocketSakuraCommsSubstate2_PlaySuccessfulSample
+	dw PocketSakuraCommsSubstate3_FadeOutWhenPrompted
+	dw PocketSakuraCommsSubstate4_FadeOut
 
-
+PocketSakuraCommsSubstate0_Init:
 	call TurnOffLCD                                       ; $51cd: $cd $e3 $08
 	ld   a, $00                                      ; $51d0: $3e $00
 	call SafeSetAudVolForMultipleChannels                                       ; $51d2: $cd $e0 $1c
@@ -2696,8 +2696,8 @@ endc
 	ld   [wWX], a                                  ; $524d: $ea $09 $c2
 	ld   [wSCX], a                                  ; $5250: $ea $07 $c2
 	ld   [wSCY], a                                  ; $5253: $ea $08 $c2
-	ld   [$c8c2], a                                  ; $5256: $ea $c2 $c8
-	ld   [$c941], a                                  ; $5259: $ea $41 $c9
+	ld   [wPocketSakuraCommsBuffer], a                                  ; $5256: $ea $c2 $c8
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $5259: $ea $41 $c9
 	call ClearBaseAnimSpriteSpecDetails                                       ; $525c: $cd $c9 $2e
 	ld   a, $01                                      ; $525f: $3e $01
 	ld   hl, $7000                                   ; $5261: $21 $00 $70
@@ -2743,8 +2743,8 @@ endc
 	call nz, ToggleDoubleSpeedMode                           ; $52c5: $c4 $f4 $53
 	ret                                              ; $52c8: $c9
 
-
-	call Call_010_540c                               ; $52c9: $cd $0c $54
+PocketSakuraCommsSubstate1_Main:
+	call DoPocketSakuraComms                               ; $52c9: $cd $0c $54
 	ld   a, [$c902]                                  ; $52cc: $fa $02 $c9
 	cp   $6c                                         ; $52cf: $fe $6c
 	jr   nz, jr_010_5319                             ; $52d1: $20 $46
@@ -2752,8 +2752,8 @@ endc
 	ld   a, [$c903]                                  ; $52d3: $fa $03 $c9
 	cp   $43                                         ; $52d6: $fe $43
 	jr   z, jr_010_52f3                              ; $52d8: $28 $19
-
-	ld   hl, $c8c2                                   ; $52da: $21 $c2 $c8
+; comms succeeded, give rewards
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $52da: $21 $c2 $c8
 	M_FarCall GivePocketSakuraRewards
 
 	jr   jr_010_530f                                 ; $52f1: $18 $1c
@@ -2767,7 +2767,7 @@ jr_010_52f3:
 
 jr_010_530f:
 	ld   a, $01                                      ; $530f: $3e $01
-	ld   [$c941], a                                  ; $5311: $ea $41 $c9
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $5311: $ea $41 $c9
 	call Call_010_5397                               ; $5314: $cd $97 $53
 	jr   jr_010_531c                                 ; $5317: $18 $03
 
@@ -2779,32 +2779,33 @@ jr_010_531c:
 	inc  [hl]                                        ; $531f: $34
 	ret                                              ; $5320: $c9
 
-
-	ld   a, [$c941]                                  ; $5321: $fa $41 $c9
+PocketSakuraCommsSubstate2_PlaySuccessfulSample:
+	ld   a, [wGameBoyOrTVCommsStatus]                                  ; $5321: $fa $41 $c9
 	or   a                                           ; $5324: $b7
-	jr   z, jr_010_532a                              ; $5325: $28 $03
+	jr   z, NoSuccessfulSample                              ; $5325: $28 $03
 
 	call PlayRandomConnSuccessfulSample                               ; $5327: $cd $7d $51
 
-jr_010_532a:
+NoSuccessfulSample:
 	ld   hl, wGameSubstate                                   ; $532a: $21 $a1 $c2
 	inc  [hl]                                        ; $532d: $34
 	ret                                              ; $532e: $c9
 
-
+PocketSakuraCommsSubstate3_FadeOutWhenPrompted:
+	; fade out if A or B is pressed
 	ld   a, [wInGameButtonsPressed]                                  ; $532f: $fa $10 $c2
 	and  $03                                         ; $5332: $e6 $03
-	jr   z, jr_010_533f                              ; $5334: $28 $09
+	jr   z, PocketSakuraCommsSubstate3_ButtonsNotPressed                              ; $5334: $28 $09
 
 	ld   a, $21                                      ; $5336: $3e $21
 	call PlaySoundEffect                                       ; $5338: $cd $df $1a
 	ld   hl, wGameSubstate                                   ; $533b: $21 $a1 $c2
 	inc  [hl]                                        ; $533e: $34
 
-jr_010_533f:
+PocketSakuraCommsSubstate3_ButtonsNotPressed:
 	ret                                              ; $533f: $c9
 
-
+PocketSakuraCommsSubstate4_FadeOut:
 	ldh  a, [rKEY1]                                  ; $5340: $f0 $4d
 	bit  7, a                                        ; $5342: $cb $7f
 	call z, ToggleDoubleSpeedMode                            ; $5344: $cc $f4 $53
@@ -2913,11 +2914,11 @@ ToggleDoubleSpeedMode::
 	ret                                                             ; $540b
 
 
-Call_010_540c:
+DoPocketSakuraComms:
 	ld   a, $b7                                      ; $540c: $3e $b7
 	ld   [$c903], a                                  ; $540e: $ea $03 $c9
 	ld   a, $3d                                      ; $5411: $3e $3d
-	ld   [$c904], a                                  ; $5413: $ea $04 $c9
+	ld   [wtodo_PocketSakuraLength], a                                  ; $5413: $ea $04 $c9
 	call Call_010_550b                               ; $5416: $cd $0b $55
 	push af                                          ; $5419: $f5
 	ld   a, $00                                      ; $541a: $3e $00
@@ -2948,12 +2949,12 @@ jr_010_543a:
 	ld   a, $04                                      ; $543b: $3e $04
 	ld   [$c8c1], a                                  ; $543d: $ea $c1 $c8
 	pop  af                                          ; $5440: $f1
-	ld   hl, $c8c2                                   ; $5441: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $5441: $21 $c2 $c8
 	ld   b, $01                                      ; $5444: $06 $01
 	call Call_010_5b12                               ; $5446: $cd $12 $5b
 	ld   a, [$c782]                                  ; $5449: $fa $82 $c7
 	cp   $6c                                         ; $544c: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $544e: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $544e: $c2 $fc $54
 
 	push af                                          ; $5451: $f5
 	ld   a, $4a                                      ; $5452: $3e $4a
@@ -2962,10 +2963,10 @@ jr_010_543a:
 	call Call_010_5c01                               ; $5458: $cd $01 $5c
 	ld   a, [$c782]                                  ; $545b: $fa $82 $c7
 	cp   $6c                                         ; $545e: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5460: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5460: $c2 $fc $54
 
 	ld   hl, $c903                                   ; $5463: $21 $03 $c9
-	ld   a, [$c8c2]                                  ; $5466: $fa $c2 $c8
+	ld   a, [wPocketSakuraCommsBuffer]                                  ; $5466: $fa $c2 $c8
 	cp   $43                                         ; $5469: $fe $43
 	jp   z, Jump_010_5522                            ; $546b: $ca $22 $55
 
@@ -2980,19 +2981,19 @@ jr_010_543a:
 	call Call_010_59e7                               ; $547c: $cd $e7 $59
 	ld   a, [$c782]                                  ; $547f: $fa $82 $c7
 	cp   $6c                                         ; $5482: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5484: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5484: $c2 $fc $54
 
-	ld   hl, $c8c2                                   ; $5487: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $5487: $21 $c2 $c8
 	ld   b, $01                                      ; $548a: $06 $01
 	call Call_010_5a37                               ; $548c: $cd $37 $5a
 	ld   a, [$c782]                                  ; $548f: $fa $82 $c7
 	cp   $6c                                         ; $5492: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5494: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5494: $c2 $fc $54
 
 	call Call_010_5bfc                               ; $5497: $cd $fc $5b
 	ld   a, [$c782]                                  ; $549a: $fa $82 $c7
 	cp   $6c                                         ; $549d: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $549f: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $549f: $c2 $fc $54
 
 	push af                                          ; $54a2: $f5
 	ld   a, $06                                      ; $54a3: $3e $06
@@ -3002,26 +3003,26 @@ jr_010_543a:
 	call Call_010_59aa                               ; $54ac: $cd $aa $59
 	ld   a, [$c782]                                  ; $54af: $fa $82 $c7
 	cp   $6c                                         ; $54b2: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $54b4: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $54b4: $c2 $fc $54
 
-	ld   hl, $c8c2                                   ; $54b7: $21 $c2 $c8
-	ld   a, [$c904]                                  ; $54ba: $fa $04 $c9
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $54b7: $21 $c2 $c8
+	ld   a, [wtodo_PocketSakuraLength]                                  ; $54ba: $fa $04 $c9
 	ld   b, a                                        ; $54bd: $47
 	call Call_010_5b12                               ; $54be: $cd $12 $5b
 	ld   a, [$c782]                                  ; $54c1: $fa $82 $c7
 	cp   $6c                                         ; $54c4: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $54c6: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $54c6: $c2 $fc $54
 
 	call Call_010_5c01                               ; $54c9: $cd $01 $5c
 	ld   a, [$c782]                                  ; $54cc: $fa $82 $c7
 	cp   $6c                                         ; $54cf: $fe $6c
 	ld   a, [$c903]                                  ; $54d1: $fa $03 $c9
 	cp   $b7                                         ; $54d4: $fe $b7
-	jp   z, Jump_010_54fc                            ; $54d6: $ca $fc $54
+	jp   z, DisableTimer                            ; $54d6: $ca $fc $54
 
-	ld   hl, $c8c2                                   ; $54d9: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $54d9: $21 $c2 $c8
 	ld   de, $c90d                                   ; $54dc: $11 $0d $c9
-	ld   a, [$c904]                                  ; $54df: $fa $04 $c9
+	ld   a, [wtodo_PocketSakuraLength]                                  ; $54df: $fa $04 $c9
 	ld   c, a                                        ; $54e2: $4f
 
 jr_010_54e3:
@@ -3034,7 +3035,7 @@ jr_010_54e3:
 	ld   hl, $c915                                   ; $54e9: $21 $15 $c9
 	ld   a, [hl]                                     ; $54ec: $7e
 	or   a                                           ; $54ed: $b7
-	jp   nz, Jump_010_54fc                           ; $54ee: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $54ee: $c2 $fc $54
 
 	ld   a, $01                                      ; $54f1: $3e $01
 	ld   [hl], a                                     ; $54f3: $77
@@ -3045,7 +3046,7 @@ Jump_010_54f7:
 	ld   a, $08                                      ; $54f7: $3e $08
 	ld   [$c782], a                                  ; $54f9: $ea $82 $c7
 
-Jump_010_54fc:
+DisableTimer:
 	ld   a, [$c782]                                  ; $54fc: $fa $82 $c7
 	ld   [$c902], a                                  ; $54ff: $ea $02 $c9
 	call Call_010_5949                               ; $5502: $cd $49 $59
@@ -3085,21 +3086,21 @@ Jump_010_5522:
 	call Call_010_59aa                               ; $552f: $cd $aa $59
 	ld   a, [$c782]                                  ; $5532: $fa $82 $c7
 	cp   $6c                                         ; $5535: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5537: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5537: $c2 $fc $54
 
-	ld   hl, $c8c2                                   ; $553a: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $553a: $21 $c2 $c8
 	ld   b, $0c                                      ; $553d: $06 $0c
 	call Call_010_5b12                               ; $553f: $cd $12 $5b
 	ld   a, [$c782]                                  ; $5542: $fa $82 $c7
 	cp   $6c                                         ; $5545: $fe $6c
-	jp   nz, Jump_010_54fc                           ; $5547: $c2 $fc $54
+	jp   nz, DisableTimer                           ; $5547: $c2 $fc $54
 
 	call Call_010_5c01                               ; $554a: $cd $01 $5c
-	jp   Jump_010_54fc                               ; $554d: $c3 $fc $54
+	jp   DisableTimer                               ; $554d: $c3 $fc $54
 
 
 todo_PocketSakuraRelatedChecksum:
-	ld   hl, $c8c2                                   ; $5550: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $5550: $21 $c2 $c8
 	ld   de, $5566                                   ; $5553: $11 $66 $55
 	ld   c, $05                                      ; $5556: $0e $05
 
@@ -3154,7 +3155,7 @@ GameState11_TVComms::
 
 TVCommsSubstate0_Init:
 ;
-	ld   hl, $c8c2                                   ; $5590: $21 $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $5590: $21 $c2 $c8
 	ld   c, $14                                      ; $5593: $0e $14
 	xor  a                                           ; $5595: $af
 
@@ -3250,7 +3251,7 @@ endc
 	ld   [wWX], a                                  ; $560f: $ea $09 $c2
 	ld   [wSCX], a                                  ; $5612: $ea $07 $c2
 	ld   [wSCY], a                                  ; $5615: $ea $08 $c2
-	ld   [$c941], a                                  ; $5618: $ea $41 $c9
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $5618: $ea $41 $c9
 
 	call ClearBaseAnimSpriteSpecDetails                                       ; $561b: $cd $c9 $2e
 
@@ -3362,7 +3363,7 @@ TVCommsSubstate2_Main:
 
 TVCommsSubstate3_DisplaySuccessfulBox:
 	ld   a, $01                                      ; $56c6: $3e $01
-	ld   [$c941], a                                  ; $56c8: $ea $41 $c9
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $56c8: $ea $41 $c9
 	call DisplayTVCommsConnSuccessfulBox                               ; $56cb: $cd $43 $57
 
 	ld   hl, wGameSubstate                                   ; $56ce: $21 $a1 $c2
@@ -4444,7 +4445,7 @@ CinematronSubstate0_DefaultInit:
 
 ;
 	xor  a                                           ; $5c19: $af
-	ld   [$c941], a                                  ; $5c1a: $ea $41 $c9
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $5c1a: $ea $41 $c9
 
 ; Inc to main substate
 	ld   hl, wGameSubstate                                          ; $5c1d
@@ -6022,7 +6023,7 @@ Call_010_65e0:
 if def(CINEMATRON_MSG_HACK)
 	call CinematronMsgHack
 else
-	ld   a, [$c941]                                  ; $65e2: $fa $41 $c9
+	ld   a, [wGameBoyOrTVCommsStatus]                                  ; $65e2: $fa $41 $c9
 endc
 	or   a                                           ; $65e5: $b7
 	jr   z, jr_010_65f8                              ; $65e6: $28 $10
@@ -8872,8 +8873,8 @@ GameState23::
 	ld   [wWX], a                                  ; $7781: $ea $09 $c2
 	ld   [wSCX], a                                  ; $7784: $ea $07 $c2
 	ld   [wSCY], a                                  ; $7787: $ea $08 $c2
-	ld   [$c8c2], a                                  ; $778a: $ea $c2 $c8
-	ld   [$c941], a                                  ; $778d: $ea $41 $c9
+	ld   [wPocketSakuraCommsBuffer], a                                  ; $778a: $ea $c2 $c8
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $778d: $ea $41 $c9
 	call ClearBaseAnimSpriteSpecDetails                                       ; $7790: $cd $c9 $2e
 	ld   a, $01                                      ; $7793: $3e $01
 	ld   hl, $7000                                   ; $7795: $21 $00 $70
@@ -8928,7 +8929,7 @@ GameState23::
 	jr   nz, jr_010_7813                             ; $7807: $20 $0a
 
 	ld   a, $01                                      ; $7809: $3e $01
-	ld   [$c941], a                                  ; $780b: $ea $41 $c9
+	ld   [wGameBoyOrTVCommsStatus], a                                  ; $780b: $ea $41 $c9
 	call Call_010_7891                               ; $780e: $cd $91 $78
 	jr   jr_010_7816                                 ; $7811: $18 $03
 
@@ -8941,7 +8942,7 @@ jr_010_7816:
 	ret                                              ; $781a: $c9
 
 
-	ld   a, [$c941]                                  ; $781b: $fa $41 $c9
+	ld   a, [wGameBoyOrTVCommsStatus]                                  ; $781b: $fa $41 $c9
 	or   a                                           ; $781e: $b7
 	jr   z, jr_010_7824                              ; $781f: $28 $03
 
@@ -9055,8 +9056,8 @@ Call_010_78ee:
 
 jr_010_78f1:
 	ld   a, $43                                      ; $78f1: $3e $43
-	ld   [$c8c2], a                                  ; $78f3: $ea $c2 $c8
-	ld   hl, $c8c2                                   ; $78f6: $21 $c2 $c8
+	ld   [wPocketSakuraCommsBuffer], a                                  ; $78f3: $ea $c2 $c8
+	ld   hl, wPocketSakuraCommsBuffer                                   ; $78f6: $21 $c2 $c8
 	ld   b, $01                                      ; $78f9: $06 $01
 	call Call_010_7932                               ; $78fb: $cd $32 $79
 	ld   hl, $7913                                   ; $78fe: $21 $13 $79
@@ -9067,7 +9068,7 @@ jr_010_78f1:
 	bit  1, a                                        ; $790c: $cb $4f
 	jr   z, jr_010_78f1                              ; $790e: $28 $e1
 
-	jp   Jump_010_54fc                               ; $7910: $c3 $fc $54
+	jp   DisableTimer                               ; $7910: $c3 $fc $54
 
 
 	ld   b, e                                        ; $7913: $43

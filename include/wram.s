@@ -349,13 +349,25 @@ wSaveScreenReturnSubstate:: ; $c8be
     db
 
 wc8bf:
-    ds $ca-$bf
+    ds $c2-$bf
+
+wPocketSakuraCommsBuffer:: ; c8c2
+    db ; unknown size
+
+wc8c3:
+    ds $ca-$c3
 
 wPocketSakuraRewardsStruct:: ; $c8ca
     db ; unknown
 
 wc8cb:
-    ds $916-$8cb
+    ds $904-$8cb
+
+wtodo_PocketSakuraLength:: ; $c904
+    db
+
+wc905:
+    ds $16-$05
 
 wResetDataBaseAnimSpriteSpecIdxUsed:: ; $c916
     db
@@ -393,8 +405,11 @@ wGameBoyOrTVCommsReturnState:: ; $c93f
 wGameBoyOrTVCommsReturnSubstate:: ; $c940
     db
 
-wc941:
-    ds 6-1
+wGameBoyOrTVCommsStatus:: ; $c941
+    db
+
+wc942:
+    ds 5-1
 
 wEnterNameReturnState:: ; $c946
     db
