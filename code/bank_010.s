@@ -2491,7 +2491,7 @@ Jump_010_50d0:
 	ld   a, $02                                      ; $50f7: $3e $02
 	ld   [$c8c1], a                                  ; $50f9: $ea $c1 $c8
 	pop  af                                          ; $50fc: $f1
-	call Call_010_593e                               ; $50fd: $cd $3e $59
+	call BeginIRCommunication                               ; $50fd: $cd $3e $59
 	call Call_010_59aa                               ; $5100: $cd $aa $59
 	ld   a, [$c782]                                  ; $5103: $fa $82 $c7
 	cp   $6c                                         ; $5106: $fe $6c
@@ -2530,7 +2530,7 @@ jr_010_5141:
 	dec  c                                           ; $5144: $0d
 	jr   nz, jr_010_5141                             ; $5145: $20 $fa
 
-	call Call_010_593e                               ; $5147: $cd $3e $59
+	call BeginIRCommunication                               ; $5147: $cd $3e $59
 	call Call_010_59e7                               ; $514a: $cd $e7 $59
 	ld   a, [$c782]                                  ; $514d: $fa $82 $c7
 	cp   $6c                                         ; $5150: $fe $6c
@@ -2747,34 +2747,37 @@ PocketSakuraCommsSubstate1_Main:
 	call DoPocketSakuraComms                               ; $52c9: $cd $0c $54
 	ld   a, [$c902]                                  ; $52cc: $fa $02 $c9
 	cp   $6c                                         ; $52cf: $fe $6c
-	jr   nz, jr_010_5319                             ; $52d1: $20 $46
+	jr   nz, PocketSakuraFailure                             ; $52d1: $20 $46
 
+; Buffer contains the first character of the special header, check for it
 	ld   a, [$c903]                                  ; $52d3: $fa $03 $c9
 	cp   $43                                         ; $52d6: $fe $43
-	jr   z, jr_010_52f3                              ; $52d8: $28 $19
-; comms succeeded, give rewards
+	jr   z, TryCheckHeader                              ; $52d8: $28 $19
+
+; Normal Pocket Sakura comms succeeded, give rewards
 	ld   hl, wPocketSakuraCommsBuffer                                   ; $52da: $21 $c2 $c8
 	M_FarCall GivePocketSakuraRewards
 
-	jr   jr_010_530f                                 ; $52f1: $18 $1c
+	jr   SetCommsSucceeded                                 ; $52f1: $18 $1c
 
-jr_010_52f3:
-	call todo_PocketSakuraRelatedChecksum                               ; $52f3: $cd $50 $55
-	jr   nz, jr_010_5319                             ; $52f6: $20 $21
+TryCheckHeader:
+	call CheckHeader                              ; $52f3: $cd $50 $55
+	jr   nz, PocketSakuraFailure                             ; $52f6: $20 $21
 
+; Received buffer contains the special header; give hardcoded rewards (?)
 	ld   hl, wPocketSakuraRewardsStruct                                   ; $52f8: $21 $ca $c8
 	M_FarCall GiveIRBasedRewards
 
-jr_010_530f:
+SetCommsSucceeded:
 	ld   a, $01                                      ; $530f: $3e $01
 	ld   [wGameBoyOrTVCommsStatus], a                                  ; $5311: $ea $41 $c9
-	call Call_010_5397                               ; $5314: $cd $97 $53
-	jr   jr_010_531c                                 ; $5317: $18 $03
+	call CreateSuccessMessageBox                               ; $5314: $cd $97 $53
+	jr   SubstateIncrement                                 ; $5317: $18 $03
 
-jr_010_5319:
-	call Call_010_53b6                               ; $5319: $cd $b6 $53
+PocketSakuraFailure:
+	call CreateFailureMessageBox                               ; $5319: $cd $b6 $53
 
-jr_010_531c:
+SubstateIncrement:
 	ld   hl, wGameSubstate                                   ; $531c: $21 $a1 $c2
 	inc  [hl]                                        ; $531f: $34
 	ret                                              ; $5320: $c9
@@ -2843,7 +2846,7 @@ PocketSakuraCommsSubstate4_FadeOut:
 	ret                                              ; $5396: $c9
 
 
-Call_010_5397:
+CreateSuccessMessageBox:
 	ld   c, $80                                      ; $5397: $0e $80
 	ld   de, $98a0                                   ; $5399: $11 $a0 $98
 	ld   a, $03                                      ; $539c: $3e $03
@@ -2859,7 +2862,7 @@ Call_010_5397:
 	ret                                              ; $53b5: $c9
 
 
-Call_010_53b6:
+CreateFailureMessageBox:
 	ld   c, $80                                      ; $53b6: $0e $80
 	ld   de, $98a0                                   ; $53b8: $11 $a0 $98
 	ld   a, $03                                      ; $53bb: $3e $03
@@ -2875,6 +2878,7 @@ Call_010_53b6:
 	ret                                              ; $53d4: $c9
 
 
+CreateUnusedMessageBox:
 	ld   c, $80                                      ; $53d5: $0e $80
 	ld   de, $98a0                                   ; $53d7: $11 $a0 $98
 	ld   a, $03                                      ; $53da: $3e $03
@@ -2928,7 +2932,7 @@ DoPocketSakuraComms:
 
 jr_010_5423:
 	push bc                                          ; $5423: $c5
-	call Call_010_593e                               ; $5424: $cd $3e $59
+	call BeginIRCommunication                               ; $5424: $cd $3e $59
 	call Call_010_59aa                               ; $5427: $cd $aa $59
 	pop  bc                                          ; $542a: $c1
 	ld   a, [$c782]                                  ; $542b: $fa $82 $c7
@@ -2977,7 +2981,7 @@ jr_010_543a:
 	ld   a, $05                                      ; $5473: $3e $05
 	ld   [$c8c1], a                                  ; $5475: $ea $c1 $c8
 	pop  af                                          ; $5478: $f1
-	call Call_010_593e                               ; $5479: $cd $3e $59
+	call BeginIRCommunication                               ; $5479: $cd $3e $59
 	call Call_010_59e7                               ; $547c: $cd $e7 $59
 	ld   a, [$c782]                                  ; $547f: $fa $82 $c7
 	cp   $6c                                         ; $5482: $fe $6c
@@ -2999,7 +3003,7 @@ jr_010_543a:
 	ld   a, $06                                      ; $54a3: $3e $06
 	ld   [$c8c1], a                                  ; $54a5: $ea $c1 $c8
 	pop  af                                          ; $54a8: $f1
-	call Call_010_593e                               ; $54a9: $cd $3e $59
+	call BeginIRCommunication                               ; $54a9: $cd $3e $59
 	call Call_010_59aa                               ; $54ac: $cd $aa $59
 	ld   a, [$c782]                                  ; $54af: $fa $82 $c7
 	cp   $6c                                         ; $54b2: $fe $6c
@@ -3049,7 +3053,7 @@ Jump_010_54f7:
 DisableTimer:
 	ld   a, [$c782]                                  ; $54fc: $fa $82 $c7
 	ld   [$c902], a                                  ; $54ff: $ea $02 $c9
-	call Call_010_5949                               ; $5502: $cd $49 $59
+	call EndIRCommunication                               ; $5502: $cd $49 $59
 	ld   a, $01                                      ; $5505: $3e $01
 	ldh  [rIE], a                                    ; $5507: $e0 $ff
 	ei                                               ; $5509: $fb
@@ -3061,7 +3065,7 @@ Call_010_550b:
 	ld   [wRandomNumRange], a                                  ; $550d: $ea $a5 $c2
 	call UpdateSramRandomSeed                                       ; $5510: $cd $70 $0c
 	di                                               ; $5513: $f3
-	call Call_010_5906                               ; $5514: $cd $06 $59
+	call InitializeIRCommunicationInterrupts                               ; $5514: $cd $06 $59
 	call Call_010_551b                               ; $5517: $cd $1b $55
 	ret                                              ; $551a: $c9
 
@@ -3082,7 +3086,7 @@ Jump_010_5522:
 	ld   a, $06                                      ; $5526: $3e $06
 	ld   [$c8c1], a                                  ; $5528: $ea $c1 $c8
 	pop  af                                          ; $552b: $f1
-	call Call_010_593e                               ; $552c: $cd $3e $59
+	call BeginIRCommunication                               ; $552c: $cd $3e $59
 	call Call_010_59aa                               ; $552f: $cd $aa $59
 	ld   a, [$c782]                                  ; $5532: $fa $82 $c7
 	cp   $6c                                         ; $5535: $fe $6c
@@ -3098,35 +3102,37 @@ Jump_010_5522:
 	call Call_010_5c01                               ; $554a: $cd $01 $5c
 	jp   DisableTimer                               ; $554d: $c3 $fc $54
 
-
-todo_PocketSakuraRelatedChecksum:
+; Checks that a received buffer has the correct header (5-byte magic string)
+; Return 0 on success, -1 on failure
+CheckHeader:
 	ld   hl, wPocketSakuraCommsBuffer                                   ; $5550: $21 $c2 $c8
-	ld   de, $5566                                   ; $5553: $11 $66 $55
+	ld   de, HeaderMagic                                   ; $5553: $11 $66 $55
 	ld   c, $05                                      ; $5556: $0e $05
 
-jr_010_5558:
+HeaderLoop:
 	ld   a, [de]                                     ; $5558: $1a
 	cp   [hl]                                        ; $5559: $be
-	jr   nz, jr_010_5563                             ; $555a: $20 $07
+	jr   nz, HeaderFailure                             ; $555a: $20 $07
 
 	inc  de                                          ; $555c: $13
 	inc  hl                                          ; $555d: $23
 	dec  c                                           ; $555e: $0d
-	jr   nz, jr_010_5558                             ; $555f: $20 $f7
+	jr   nz, HeaderLoop                             ; $555f: $20 $f7
 
 	xor  a                                           ; $5561: $af
 	ret                                              ; $5562: $c9
 
-jr_010_5563:
+HeaderFailure:
 	or   $ff                                         ; $5563: $f6 $ff
 	ret                                              ; $5565: $c9
 
-
-	ld   b, e                                        ; $5566: $43
-	ld   d, d                                        ; $5567: $52
-	ld   c, d                                        ; $5568: $4a
-	ld   b, h                                        ; $5569: $44
-	ld   c, l                                        ; $556a: $4d
+HeaderMagic:
+	; C R J D M?
+	db $43                                        ; $5566: $43
+	db $52                                        ; $5567: $52
+	db $4a                                        ; $5568: $4a
+	db $44                                        ; $5569: $44
+	db $4d                                        ; $556a: $4d
 
 
 SetPocketSakuraCommsState:
@@ -3893,97 +3899,93 @@ CheckIfTVAdapterConnected:
 	ret                                                             ; $5905
 
 
-Call_010_5906:
-	call Call_010_591c                               ; $5906: $cd $1c $59
-	ld   a, $04                                      ; $5909: $3e $04
-	ldh  [rIE], a                                    ; $590b: $e0 $ff
-	xor  a                                           ; $590d: $af
-	ldh  [rIF], a                                    ; $590e: $e0 $0f
-	call Call_010_593e                               ; $5910: $cd $3e $59
-	xor  a                                           ; $5913: $af
-	ld   b, a                                        ; $5914: $47
-
-jr_010_5915:
-	inc  a                                           ; $5915: $3c
-	jr   nz, jr_010_5915                             ; $5916: $20 $fd
-
-	inc  b                                           ; $5918: $04
-	jr   nz, jr_010_5915                             ; $5919: $20 $fa
-
-	ret                                              ; $591b: $c9
+InitializeIRCommunicationInterrupts:
+	call StartFastIRTimer
+	ld a, IE_TIMER
+	ldh [rIE], a
+	xor a
+	ldh [rIF], a
+	call BeginIRCommunication
+; waits for ~$40400 cycles = ~0.25 seconds
+	xor a
+	ld b, a
+.busy_wait
+	inc a
+	jr nz, .busy_wait
+	inc b
+	jr nz, .busy_wait
+	ret
 
 
-Call_010_591c:
+StartFastIRTimer:
+; Starts a 65,536 Hz timer that interrupts every 3 increments (21,845 Hz).
 	xor  a                                           ; $591c: $af
 	ldh  [rTAC], a                                   ; $591d: $e0 $07
 	ld   a, $fe                                      ; $591f: $3e $fe
 	ldh  [rTMA], a                                   ; $5921: $e0 $06
 	ldh  [rTIMA], a                                  ; $5923: $e0 $05
-	ld   a, $02                                      ; $5925: $3e $02
+	ld   a, TAC_65KHZ                                      ; $5925: $3e $02
 	ldh  [rTAC], a                                   ; $5927: $e0 $07
-	or   $04                                         ; $5929: $f6 $04
+	or   TAC_START                                         ; $5929: $f6 $04
 	ldh  [rTAC], a                                   ; $592b: $e0 $07
 	ret                                              ; $592d: $c9
 
 
-Call_010_592e:
+StartSlowIRTimer:
+; Starts a 65,536 Hz timer that interrupts every 256 increments (256 Hz).
 	xor  a                                           ; $592e: $af
 	ldh  [rTAC], a                                   ; $592f: $e0 $07
 	ldh  [rTMA], a                                   ; $5931: $e0 $06
 	ldh  [rTIMA], a                                  ; $5933: $e0 $05
-	ld   a, $02                                      ; $5935: $3e $02
+	ld   a, TAC_65KHZ                                      ; $5935: $3e $02
 	ldh  [rTAC], a                                   ; $5937: $e0 $07
-	or   $04                                         ; $5939: $f6 $04
+	or   TAC_START                                         ; $5939: $f6 $04
 	ldh  [rTAC], a                                   ; $593b: $e0 $07
 	ret                                              ; $593d: $c9
 
 
-Call_010_593e:
-	ld   a, $c0                                      ; $593e: $3e $c0
-	call Call_010_5a2f                               ; $5940: $cd $2f $5a
-	ld   a, $01                                      ; $5943: $3e $01
-	ld   [$c781], a                                  ; $5945: $ea $81 $c7
+BeginIRCommunication:
+	ld a, RP_ENABLE                                      ; $593e: $3e $c0
+	call ToggleIRCommunication                               ; $5940: $cd $2f $5a
+	ld   a, IR_RECEIVER                                     ; $5943: $3e $01
+	ld   [wIrRole], a                                  ; $5945: $ea $81 $c7
 	ret                                              ; $5948: $c9
 
 
-Call_010_5949:
+EndIRCommunication:
 	xor  a                                           ; $5949: $af
-	call Call_010_5a2f                               ; $594a: $cd $2f $5a
-	ld   a, $02                                      ; $594d: $3e $02
+	call ToggleIRCommunication                               ; $594a: $cd $2f $5a
+	ld   a, TAC_65KHZ                                      ; $594d: $3e $02
 	ldh  [rTAC], a                                   ; $594f: $e0 $07
 	ret                                              ; $5951: $c9
 
 
-Call_010_5952:
-jr_010_5952:
+ReceiveInfraredLEDOn:
+; Count interrupts of the partner's IR LED on; quit after 256-d interrupts.
 	inc  d                                           ; $5952: $14
 	ret  z                                           ; $5953: $c8
-
 	xor  a                                           ; $5954: $af
 	ldh  [rIF], a                                    ; $5955: $e0 $0f
 	halt                                             ; $5957: $76
 	nop                                              ; $5958: $00
 	ldh  a, [c]                                      ; $5959: $f2
-	bit  1, a                                        ; $595a: $cb $4f
-	jr   z, jr_010_5952                              ; $595c: $28 $f4
-
+	bit  B_RP_DATA_IN, a                                        ; $595a: $cb $4f
+	jr   z, ReceiveInfraredLEDOn                              ; $595c: $28 $f4
 	or   a                                           ; $595e: $b7
 	ret                                              ; $595f: $c9
 
 
-Call_010_5960:
-jr_010_5960:
+ReceiveInfraredLEDOff:
+; Count interrupts of the partner's IR LED off; quit after 256-d interrupts.
 	inc  d                                           ; $5960: $14
 	ret  z                                           ; $5961: $c8
-
 	xor  a                                           ; $5962: $af
 	ldh  [rIF], a                                    ; $5963: $e0 $0f
 	halt                                             ; $5965: $76
 	nop                                              ; $5966: $00
 	ldh  a, [c]                                      ; $5967: $f2
-	bit  1, a                                        ; $5968: $cb $4f
-	jr   nz, jr_010_5960                             ; $596a: $20 $f4
-
+	bit  B_RP_DATA_IN, a                                        ; $5968: $cb $4f
+	jr   nz, ReceiveInfraredLEDOff                             ; $596a: $20 $f4
 	or   a                                           ; $596c: $b7
 	ret                                              ; $596d: $c9
 
@@ -4050,17 +4052,17 @@ Call_010_59aa:
 	ld   c, LOW(rRP)                                      ; $59aa: $0e $56
 	ld   d, $00                                      ; $59ac: $16 $00
 	ld   e, d                                        ; $59ae: $5a
-	call Call_010_5960                               ; $59af: $cd $60 $59
+	call ReceiveInfraredLEDOff                               ; $59af: $cd $60 $59
 	jp   z, Jump_010_5af7                            ; $59b2: $ca $f7 $5a
 
 	ld   d, e                                        ; $59b5: $53
-	call Call_010_5952                               ; $59b6: $cd $52 $59
+	call ReceiveInfraredLEDOn                               ; $59b6: $cd $52 $59
 	jp   z, Jump_010_5af7                            ; $59b9: $ca $f7 $5a
 
-	call Call_010_5960                               ; $59bc: $cd $60 $59
+	call ReceiveInfraredLEDOff                               ; $59bc: $cd $60 $59
 	jp   z, Jump_010_5af7                            ; $59bf: $ca $f7 $5a
 
-	call Call_010_5952                               ; $59c2: $cd $52 $59
+	call ReceiveInfraredLEDOn                               ; $59c2: $cd $52 $59
 	jp   z, Jump_010_5af7                            ; $59c5: $ca $f7 $5a
 
 	ld   a, $6c                                      ; $59c8: $3e $6c
@@ -4096,17 +4098,17 @@ jr_010_59e7:
 	ld   d, $05                                      ; $5a05: $16 $05
 	call Call_010_597a                               ; $5a07: $cd $7a $59
 	ld   d, e                                        ; $5a0a: $53
-	call Call_010_5960                               ; $5a0b: $cd $60 $59
+	call ReceiveInfraredLEDOff                               ; $5a0b: $cd $60 $59
 	jp   z, Jump_010_5af7                            ; $5a0e: $ca $f7 $5a
 
 	ld   d, e                                        ; $5a11: $53
-	call Call_010_5952                               ; $5a12: $cd $52 $59
+	call ReceiveInfraredLEDOn                               ; $5a12: $cd $52 $59
 	jp   z, Jump_010_5af7                            ; $5a15: $ca $f7 $5a
 
-	call Call_010_5960                               ; $5a18: $cd $60 $59
+	call ReceiveInfraredLEDOff                               ; $5a18: $cd $60 $59
 	jp   z, Jump_010_5af7                            ; $5a1b: $ca $f7 $5a
 
-	call Call_010_5952                               ; $5a1e: $cd $52 $59
+	call ReceiveInfraredLEDOn                               ; $5a1e: $cd $52 $59
 	jp   z, Jump_010_5af7                            ; $5a21: $ca $f7 $5a
 
 	ld   d, $3d                                      ; $5a24: $16 $3d
@@ -4116,7 +4118,7 @@ jr_010_59e7:
 	ret                                              ; $5a2e: $c9
 
 
-Call_010_5a2f:
+ToggleIRCommunication:
 	ldh  [rRP], a                                    ; $5a2f: $e0 $56
 	ld   a, $ff                                      ; $5a31: $3e $ff
 	ld   [$c782], a                                  ; $5a33: $ea $82 $c7
@@ -4322,15 +4324,15 @@ Jump_010_5b12:
 Call_010_5b73:
 	ld   c, LOW(rRP)                                      ; $5b73: $0e $56
 	ld   d, $00                                      ; $5b75: $16 $00
-	call Call_010_5960                               ; $5b77: $cd $60 $59
+	call ReceiveInfraredLEDOff                               ; $5b77: $cd $60 $59
 	jp   z, Jump_010_5af7                            ; $5b7a: $ca $f7 $5a
 
 	ld   d, $00                                      ; $5b7d: $16 $00
-	call Call_010_5952                               ; $5b7f: $cd $52 $59
+	call ReceiveInfraredLEDOn                               ; $5b7f: $cd $52 $59
 	jp   z, Jump_010_5af7                            ; $5b82: $ca $f7 $5a
 
 	ld   d, $00                                      ; $5b85: $16 $00
-	call Call_010_5960                               ; $5b87: $cd $60 $59
+	call ReceiveInfraredLEDOff                               ; $5b87: $cd $60 $59
 	jp   z, Jump_010_5af7                            ; $5b8a: $ca $f7 $5a
 
 	ld   a, b                                        ; $5b8d: $78
@@ -4338,7 +4340,7 @@ Call_010_5b73:
 	ld   b, a                                        ; $5b8f: $47
 	xor  a                                           ; $5b90: $af
 	ld   [$c788], a                                  ; $5b91: $ea $88 $c7
-	call Call_010_592e                               ; $5b94: $cd $2e $59
+	call StartSlowIRTimer                               ; $5b94: $cd $2e $59
 
 jr_010_5b97:
 	inc  b                                           ; $5b97: $04
@@ -4406,11 +4408,11 @@ jr_010_5bd5:
 	jr   jr_010_5b97                                 ; $5be6: $18 $af
 
 jr_010_5be8:
-	call Call_010_591c                               ; $5be8: $cd $1c $59
+	call StartFastIRTimer                               ; $5be8: $cd $1c $59
 	xor  a                                           ; $5beb: $af
 	ldh  [rIF], a                                    ; $5bec: $e0 $0f
 	ld   d, $00                                      ; $5bee: $16 $00
-	call Call_010_5952                               ; $5bf0: $cd $52 $59
+	call ReceiveInfraredLEDOn                               ; $5bf0: $cd $52 $59
 	jp   z, Jump_010_5af7                            ; $5bf3: $ca $f7 $5a
 
 	ld   d, $10                                      ; $5bf6: $16 $10
@@ -9097,7 +9099,7 @@ jr_010_78f1:
 Call_010_7932:
 	push bc                                          ; $7932: $c5
 	push hl                                          ; $7933: $e5
-	call Call_010_593e                               ; $7934: $cd $3e $59
+	call BeginIRCommunication                               ; $7934: $cd $3e $59
 	call Call_010_7994                               ; $7937: $cd $94 $79
 	pop  hl                                          ; $793a: $e1
 	pop  bc                                          ; $793b: $c1

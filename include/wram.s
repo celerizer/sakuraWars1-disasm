@@ -307,7 +307,13 @@ wCredits1NumNames:: ; $c71a
     db
 
 wc71b:
-    ds $81c-$71b
+    ds $81-$1b
+
+wIrRole:: ; $c781
+    db
+
+wc782:
+    ds $81c-$782
 
 wSakuraMiniGameScoreDiv10:: ; $c81c
     dw
